@@ -37,6 +37,33 @@ python -m dadri.workers.run_telegram
 
 The first run may ask for your Telegram phone number, login code, and 2FA password. The session is saved under `.data/telegram` and reused on later runs. For a bot, set `TELEGRAM_BOT_TOKEN` instead.
 
+## Run X and Telegram together
+
+Use the combined worker for multiple topics and channels:
+
+```fish
+set -x MONGODB_URI 'your-atlas-uri'
+set -x MONGODB_DATABASE apitoprocessing
+set -x MONGODB_POSTS_COLLECTION realdata1
+
+set -x X_USERNAME sihwinner
+set -x X_COOKIES_FILE .data/x_cookies.json
+set -x X_TOPICS 'finance,SIH,Link Analysis'
+set -x X_RESULTS_PER_POLL 1
+set -x X_POLL_INTERVAL 5
+set -x X_MAX_POLLS 100
+
+set -x TELEGRAM_API_ID 'your-api-id'
+set -x TELEGRAM_API_HASH 'your-api-hash'
+set -x TELEGRAM_ENTITIES '@channel_one,@channel_two,@group_three'
+set -x TELEGRAM_POLL_INTERVAL 5
+set -x TELEGRAM_MAX_POLLS 100
+
+python -m dadri.workers.run_all
+```
+
+`X_TOPICS` becomes one X search such as `("finance" OR "SIH" OR "Link Analysis") -filter:retweets`. Each value in `TELEGRAM_ENTITIES` gets its own concurrent polling task. Press `Ctrl+C` to stop all pollers.
+
 ## Start X polling
 
 Initialize the database once, then start the five-second poller:
